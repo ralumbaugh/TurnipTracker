@@ -6,5 +6,7 @@ namespace TurnipTracker.Models
     {
         public MyContext(DbContextOptions options) : base(options) { }
         public DbSet<User> Users {get;set;}
+        public DbSet<Group> Groups {get;set;}
+        public DbSet<Membership> Memberships {get;set;}
     }
 }

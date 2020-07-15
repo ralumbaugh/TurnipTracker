@@ -23,7 +23,7 @@ namespace TurnipTracker.Controllers
         [Route("")]
         public IActionResult Index()
         {
-            return View();
+            return View("Index");
         }
         public IActionResult Login(LoginWrapper WrappedUser)
         {
