@@ -12,7 +12,8 @@ namespace TurnipTracker.Models
     public string Name {get; set;}
     public int UserId {get; set;}
     public User Owner {get; set;}
-    public List<User> Members {get; set;}
+    public List<Membership> Members {get; set;}
+    public bool NeedsMembershipApproval {get; set;} = false;
     public DateTime CreatedAt {get; set;} = DateTime.Now;
     public DateTime UpdatedAt {get; set;} = DateTime.Now;
     }
