@@ -19,11 +19,68 @@ namespace TurnipTracker.Controllers
         {
             dbContext = context;
         }
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
+        // [Route("")]
         public IActionResult Index()
         {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID != null)
+            {
+                return RedirectToAction("Dashboard");
+            }
             return View("Index");
+        }
+		[HttpGet("Dashboard")]
+        public IActionResult Dashboard()
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Wrapper wrapper = new Wrapper();
+            wrapper.CurrentUser=dbContext.Users.Include(m => m.Groups).ThenInclude(g => g.Group).Include(c => c.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
+            wrapper.AllUsers=dbContext.Users.ToList();
+            return View("Dashboard", wrapper);
+        }
+		[HttpPost("UpdatePrices")]
+        public IActionResult UpdatePrices(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing > 1){
+                ModelState.AddModelError("CurrentTrend.BigSpike","Trends should not be greater than 100%");
+            }
+            if(ModelState.IsValid){
+                User CurrentUser = dbContext.Users.Include(t => t.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
+                int ThisTrendId = CurrentUser.Trends[0].TrendId;
+                Trend TrendToChange = dbContext.Trends.FirstOrDefault(t => t.TrendId == ThisTrendId);
+                TrendToChange.BuyPrice = wrapper.CurrentTrend.BuyPrice;
+                TrendToChange.MonAM = wrapper.CurrentTrend.MonAM;
+                TrendToChange.MonPM = wrapper.CurrentTrend.MonPM;
+                TrendToChange.TueAM = wrapper.CurrentTrend.TueAM;
+                TrendToChange.TuePM = wrapper.CurrentTrend.TuePM;
+                TrendToChange.WedAM = wrapper.CurrentTrend.WedAM;
+                TrendToChange.WedPM = wrapper.CurrentTrend.WedPM;
+                TrendToChange.ThurAM = wrapper.CurrentTrend.ThurAM;
+                TrendToChange.ThurPM = wrapper.CurrentTrend.ThurPM;
+                TrendToChange.FriAM = wrapper.CurrentTrend.FriAM;
+                TrendToChange.FriPM = wrapper.CurrentTrend.FriPM;
+                TrendToChange.SatAM = wrapper.CurrentTrend.SatAM;
+                TrendToChange.SatPM = wrapper.CurrentTrend.SatPM;
+                TrendToChange.BigSpike = wrapper.CurrentTrend.BigSpike;
+                TrendToChange.SmallSpike = wrapper.CurrentTrend.SmallSpike;
+                TrendToChange.Fluctuating = wrapper.CurrentTrend.Fluctuating;
+                TrendToChange.Decreasing = wrapper.CurrentTrend.Decreasing;
+                TrendToChange.KnownTrend = wrapper.CurrentTrend.KnownTrend;
+                dbContext.Update(TrendToChange);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
         }
         public IActionResult Login(LoginWrapper WrappedUser)
         {
@@ -44,7 +101,7 @@ namespace TurnipTracker.Controllers
                     return View("Index");
                 }
                 HttpContext.Session.SetInt32("LoggedInUserID", UserInDb.UserId);
-                return RedirectToAction("LoggedIn");
+                return RedirectToAction("Dashboard");
             }
             else
             {
@@ -65,8 +122,12 @@ namespace TurnipTracker.Controllers
                 user.Password = Hasher.HashPassword(user, user.Password);
                 dbContext.Add(user);
                 dbContext.SaveChanges();
+                Trend CurrentTrend = new Trend();
+                CurrentTrend.TrendOwner = user;
+                dbContext.Add(CurrentTrend);
+                dbContext.SaveChanges();
                 HttpContext.Session.SetInt32("LoggedInUserID", user.UserId);
-                return RedirectToAction("LoggedIn");
+                return RedirectToAction("Dashboard");
             }
             else
             {

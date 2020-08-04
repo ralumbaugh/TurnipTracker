@@ -24,10 +24,7 @@ namespace TurnipTracker.Models
     public List<Membership> Groups {get; set;}
     public List<Group> GroupsMade {get; set;}
     public bool IsAdmin {get; set;}
-    public List<int> ThisWeekPrices {get; set;}
-    public List<int> LastWeekPrices {get; set;}
-    public List<float> ThisWeekTrend {get; set;}
-    public string LastWeekTrend {get; set;}
+    public List<Trend> Trends {get; set;}
     [DataType (DataType.Url, ErrorMessage="Please input a valid URL")]
     public string IslandLink {get; set;}
     public DateTime CreatedAt {get; set;} = DateTime.Now;
