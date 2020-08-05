@@ -82,6 +82,52 @@ namespace TurnipTracker.Controllers
             }
             return Dashboard();
         }
+		[HttpGet("NewGroup")]
+        public IActionResult NewGroup(string GroupName)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View("NewGroup");
+        }
+		[HttpPost("MakeGroup")]
+        public IActionResult MakeGroup(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Group NewGroup = dbContext.Groups.FirstOrDefault(g => g.Name == wrapper.CurrentGroup.Name);
+            if(NewGroup == null)
+            {
+                return RedirectToAction("Dashboard");
+                
+            }
+            else
+            {
+                Console.WriteLine("Fucking party!");
+                return RedirectToAction("Dashboard");
+            }
+        }
+		// [HttpGet("ShowGroup/{GroupId}")]
+        // public IActionResult ShowGroup(int GroupId)
+        // {
+        //     int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+        //     if(LoggedInUserID==null)
+        //     {
+        //         return RedirectToAction("Index");
+        //     }
+        //     Group CurrentGroup = dbContext.Groups.FirstOrDefault(g=> g.GroupId == GroupId);
+        //     // User CurrentUser = dbContext.Users.Include(u=>u.Groups).FirstOrDefault(u=> u.UserId == (int)LoggedInUserID);
+        //     if(CurrentGroup == null)
+        //     {
+        //         return Dashboard();
+        //     }
+        //     return View("IndividualGroup");
+        // }
         public IActionResult Login(LoginWrapper WrappedUser)
         {
             LoginUser user = WrappedUser.LoginUser;
