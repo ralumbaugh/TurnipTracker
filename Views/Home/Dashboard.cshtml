@@ -5,15 +5,69 @@
 
 <div class="text-center">
     <h1>Hello @Model.CurrentUser.FirstName @Model.CurrentUser.LastName</h1>
-    @if(@Model.CurrentUser.Groups.Count == 0)
+    <div>
+        <a href="/JoinGroup"><button class="btn btn-primary">Join a group!</button></a>
+        <a href="/NewGroup"><button class="btn btn-primary">Start a new group!</button></a>
+    </div>
+    @if(@Model.AllGroups.Count == 0)
     {
-        <p>You're not in any groups. Perhaps you would like to join one or <a href="/NewGroup">start a new one?</a></p>
+        <p>You're not in any groups. Perhaps you would like to <a href="/JoinGroup">join one</a> or <a href="/NewGroup">start a new one?</a></p>
     }
     else
     {
-        foreach(Membership group in Model.CurrentUser.Groups)
+        foreach(Group group in Model.AllGroups)
         {
-            <p>You're a member of this group: @group.Group.Name</p>
+            <p>You're a member of this group: @group.Name</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Buy Price</th>
+                        <th scope="col">Mon. AM</th>
+                        <th scope="col">Mon. PM</th>
+                        <th scope="col">Tues. AM</th>
+                        <th scope="col">Tues. PM</th>
+                        <th scope="col">Wed. AM</th>
+                        <th scope="col">Wed. PM</th>
+                        <th scope="col">Thurs. AM</th>
+                        <th scope="col">Thurs. PM</th>
+                        <th scope="col">Fri. AM</th>
+                        <th scope="col">Fri. PM</th>
+                        <th scope="col">Sat. AM</th>
+                        <th scope="col">Sat. PM</th>
+                        <th scope="col">Big Spike</th>
+                        <th scope="col">Small Spike</th>
+                        <th scope="col">Fluct.</th>
+                        <th scope="col">Decr.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(Membership Members in group.Members)
+                    {
+                        <tr>
+                            <td>@Members.User.FirstName @Members.User.LastName</td>
+                            <td>@Members.User.Trends[0].BuyPrice</td>
+                            <td>@Members.User.Trends[0].MonAM</td>
+                            <td>@Members.User.Trends[0].MonPM</td>
+                            <td>@Members.User.Trends[0].TueAM</td>
+                            <td>@Members.User.Trends[0].TuePM</td>
+                            <td>@Members.User.Trends[0].WedAM</td>
+                            <td>@Members.User.Trends[0].WedPM</td>
+                            <td>@Members.User.Trends[0].ThurAM</td>
+                            <td>@Members.User.Trends[0].ThurPM</td>
+                            <td>@Members.User.Trends[0].FriAM</td>
+                            <td>@Members.User.Trends[0].FriPM</td>
+                            <td>@Members.User.Trends[0].SatAM</td>
+                            <td>@Members.User.Trends[0].SatPM</td>
+                            <td>@Members.User.Trends[0].BigSpike</td>
+                            <td>@Members.User.Trends[0].SmallSpike</td>
+                            <td>@Members.User.Trends[0].Fluctuating</td>
+                            <td>@Members.User.Trends[0].Decreasing</td>
+                        </tr>
+                        <p>@Members.User.FirstName</p>
+                    }
+                </tbody>
+            </table>
         }
     }
     <p>Here are your trends for the week!</p>

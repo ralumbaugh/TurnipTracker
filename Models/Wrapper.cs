@@ -10,7 +10,9 @@ namespace TurnipTracker.Models
         public User CurrentUser {get; set;}
         public LoginUser LoginUser {get; set;}
         public Group CurrentGroup {get; set;}
-        public List<User> AllUsers {get; set;}
         public Trend CurrentTrend {get; set;}
+        public List<User> AllUsers {get; set;}
+        public List<Group> AllGroups {get; set;}
+        public List<Membership> AllMemberships {get; set;}
     }
 }

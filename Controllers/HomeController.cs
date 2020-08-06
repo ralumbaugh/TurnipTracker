@@ -38,9 +38,11 @@ namespace TurnipTracker.Controllers
             {
                 return RedirectToAction("Index");
             }
-            Wrapper wrapper = new Wrapper();
-            wrapper.CurrentUser=dbContext.Users.Include(m => m.Groups).ThenInclude(g => g.Group).Include(c => c.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
-            wrapper.AllUsers=dbContext.Users.ToList();
+            Wrapper wrapper = new Wrapper()
+            {
+                CurrentUser=dbContext.Users.Include(t => t.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID),
+                AllGroups=dbContext.Groups.Include(m => m.Members).ThenInclude(u => u.User).ThenInclude(t => t.Trends).Where(m => m.Members.Any(u => u.UserId == (int)LoggedInUserID)).ToList()
+            };
             return View("Dashboard", wrapper);
         }
 		[HttpPost("UpdatePrices")]
@@ -51,8 +53,8 @@ namespace TurnipTracker.Controllers
             {
                 return RedirectToAction("Index");
             }
-            if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing > 1){
-                ModelState.AddModelError("CurrentTrend.BigSpike","Trends should not be greater than 100%");
+            if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing != 1){
+                ModelState.AddModelError("CurrentTrend.BigSpike","Trends should add up to 100%");
             }
             if(ModelState.IsValid){
                 User CurrentUser = dbContext.Users.Include(t => t.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
@@ -83,7 +85,7 @@ namespace TurnipTracker.Controllers
             return Dashboard();
         }
 		[HttpGet("NewGroup")]
-        public IActionResult NewGroup(string GroupName)
+        public IActionResult NewGroup()
         {
             int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
             if(LoggedInUserID==null)
@@ -101,16 +103,37 @@ namespace TurnipTracker.Controllers
                 return RedirectToAction("Index");
             }
             Group NewGroup = dbContext.Groups.FirstOrDefault(g => g.Name == wrapper.CurrentGroup.Name);
-            if(NewGroup == null)
+            if(NewGroup != null)
             {
-                return RedirectToAction("Dashboard");
-                
+                ModelState.AddModelError("CurrentGroup.Name", "This group name is already taken. Try another one!");
             }
-            else
+            NewGroup = wrapper.CurrentGroup;
+            NewGroup.UserId = (int)LoggedInUserID;
+            if(ModelState.IsValid)
             {
-                Console.WriteLine("Fucking party!");
+                dbContext.Groups.Add(NewGroup);
+                dbContext.SaveChanges();
+                Membership NewMembership = new Membership(){UserId = (int)LoggedInUserID, GroupId = NewGroup.GroupId, AcceptedToGroup = true};
+                dbContext.Memberships.Add(NewMembership);
+                dbContext.SaveChanges();
                 return RedirectToAction("Dashboard");
             }
+            return View("NewGroup");
+        }
+		[HttpGet("JoinGroup")]
+        public IActionResult JoinGroup()
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Wrapper wrapper = new Wrapper()
+            {
+                CurrentUser = dbContext.Users.FirstOrDefault(u => u.UserId == (int)LoggedInUserID),
+                AllGroups = dbContext.Groups.Where(m => !m.Members.Any(u => u.UserId == (int)LoggedInUserID)).ToList()
+            };
+            return View("JoinGroup", wrapper);
         }
 		// [HttpGet("ShowGroup/{GroupId}")]
         // public IActionResult ShowGroup(int GroupId)
