@@ -20,7 +20,6 @@ namespace TurnipTracker.Controllers
             dbContext = context;
         }
         [HttpGet("")]
-        // [Route("")]
         public IActionResult Index()
         {
             int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
@@ -41,7 +40,8 @@ namespace TurnipTracker.Controllers
             Wrapper wrapper = new Wrapper()
             {
                 CurrentUser=dbContext.Users.Include(t => t.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID),
-                AllGroups=dbContext.Groups.Include(m => m.Members).ThenInclude(u => u.User).ThenInclude(t => t.Trends).Where(m => m.Members.Any(u => u.UserId == (int)LoggedInUserID)).ToList()
+                AllGroups=dbContext.Groups.Include(m => m.Members).ThenInclude(u => u.User).ThenInclude(t => t.Trends).Where(m => m.Members.Any(u => u.UserId == (int)LoggedInUserID && u.AcceptedToGroup == true)).ToList(),
+                GroupsNotIn=dbContext.Groups.Where(m => !m.Members.Any(u => u.UserId == (int)LoggedInUserID)).ToList()
             };
             return View("Dashboard", wrapper);
         }
@@ -53,12 +53,25 @@ namespace TurnipTracker.Controllers
             {
                 return RedirectToAction("Index");
             }
+            int TrendNumber = 0;
+            if(wrapper.LastWeekTrend != null)
+            {
+                TrendNumber = 1;
+                wrapper.CurrentTrend = wrapper.LastWeekTrend;
+            }
             if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing != 1){
-                ModelState.AddModelError("CurrentTrend.BigSpike","Trends should add up to 100%");
+                if(TrendNumber == 1)
+                {
+                    ModelState.AddModelError("LastWeekTrend.BigSpike","Trends should add up to 100%");
+                }
+                else
+                {
+                    ModelState.AddModelError("CurrentTrend.BigSpike","Trends should add up to 100%");
+                }
             }
             if(ModelState.IsValid){
                 User CurrentUser = dbContext.Users.Include(t => t.Trends).FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
-                int ThisTrendId = CurrentUser.Trends[0].TrendId;
+                int ThisTrendId = CurrentUser.Trends[TrendNumber].TrendId;
                 Trend TrendToChange = dbContext.Trends.FirstOrDefault(t => t.TrendId == ThisTrendId);
                 TrendToChange.BuyPrice = wrapper.CurrentTrend.BuyPrice;
                 TrendToChange.MonAM = wrapper.CurrentTrend.MonAM;
@@ -102,12 +115,12 @@ namespace TurnipTracker.Controllers
             {
                 return RedirectToAction("Index");
             }
-            Group NewGroup = dbContext.Groups.FirstOrDefault(g => g.Name == wrapper.CurrentGroup.Name);
+            Group NewGroup = dbContext.Groups.FirstOrDefault(g => g.Name == wrapper.MakeGroup.Name);
             if(NewGroup != null)
             {
-                ModelState.AddModelError("CurrentGroup.Name", "This group name is already taken. Try another one!");
+                ModelState.AddModelError("MakeGroup.Name", "This group name is already taken. Try another one!");
             }
-            NewGroup = wrapper.CurrentGroup;
+            NewGroup = wrapper.MakeGroup;
             NewGroup.UserId = (int)LoggedInUserID;
             if(ModelState.IsValid)
             {
@@ -118,39 +131,109 @@ namespace TurnipTracker.Controllers
                 dbContext.SaveChanges();
                 return RedirectToAction("Dashboard");
             }
-            return View("NewGroup");
+            return Dashboard();
         }
-		[HttpGet("JoinGroup")]
-        public IActionResult JoinGroup()
+		[HttpPost("JoinGroup")]
+        public IActionResult JoinGroup(Wrapper wrapper)
         {
             int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
             if(LoggedInUserID==null)
             {
                 return RedirectToAction("Index");
             }
-            Wrapper wrapper = new Wrapper()
+            User CurrentUser = dbContext.Users.FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
+            Group GroupToAdd = dbContext.Groups.Include(m => m.Members).FirstOrDefault(g => g.Name == wrapper.JoinGroup.Name);
+            Membership TestMembership = dbContext.Memberships.FirstOrDefault(m => m.GroupId == GroupToAdd.GroupId && m.UserId == (int)LoggedInUserID);
+            if(GroupToAdd==null)
             {
-                CurrentUser = dbContext.Users.FirstOrDefault(u => u.UserId == (int)LoggedInUserID),
-                AllGroups = dbContext.Groups.Where(m => !m.Members.Any(u => u.UserId == (int)LoggedInUserID)).ToList()
-            };
-            return View("JoinGroup", wrapper);
+                ModelState.AddModelError("JoinGroup.Name","This group doesn't exist!");
+            }
+            else if(TestMembership != null)
+            {
+                if(TestMembership.AcceptedToGroup== false)
+                {
+                    ModelState.AddModelError("JoinGroup.Name","You've already applied to this group. You are awaiting membership approval.");
+                }
+                else
+                {
+                    ModelState.AddModelError("JoinGroup.Name","You're already in this group. Try joining another one!");
+                }
+            }
+            if(ModelState.IsValid)
+            {
+                Membership NewMembership = new Membership{UserId = (int)LoggedInUserID, GroupId = GroupToAdd.GroupId};
+                if(GroupToAdd.NeedsMembershipApproval == false)
+                {
+                    NewMembership.AcceptedToGroup = true;
+                }
+                dbContext.Memberships.Add(NewMembership);
+                dbContext.SaveChanges();
+            }
+            return Dashboard();
         }
-		// [HttpGet("ShowGroup/{GroupId}")]
-        // public IActionResult ShowGroup(int GroupId)
-        // {
-        //     int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
-        //     if(LoggedInUserID==null)
-        //     {
-        //         return RedirectToAction("Index");
-        //     }
-        //     Group CurrentGroup = dbContext.Groups.FirstOrDefault(g=> g.GroupId == GroupId);
-        //     // User CurrentUser = dbContext.Users.Include(u=>u.Groups).FirstOrDefault(u=> u.UserId == (int)LoggedInUserID);
-        //     if(CurrentGroup == null)
-        //     {
-        //         return Dashboard();
-        //     }
-        //     return View("IndividualGroup");
-        // }
+		[HttpPost("LeaveGroup")]
+        public IActionResult LeaveGroup(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Membership MembershipToDelete = dbContext.Memberships.FirstOrDefault(m => m.GroupId == wrapper.LeaveGroup.GroupId && m.UserId == (int)LoggedInUserID);
+            Group GroupToDelete = dbContext.Groups.FirstOrDefault(g => g.GroupId == wrapper.LeaveGroup.GroupId);
+            if(MembershipToDelete == null)
+            {
+                ModelState.AddModelError("LeaveGroup.Name","You can't leave a group you're not in");
+            }
+            if(ModelState.IsValid)
+            {
+                if(GroupToDelete.UserId == (int)LoggedInUserID)
+                {
+                    dbContext.Groups.Remove(GroupToDelete);
+                }
+                dbContext.Memberships.Remove(MembershipToDelete);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
+		[HttpGet("TransferOwnership/{GroupId}/{NewOwnerId}")]
+        public IActionResult TransferOwnership(int GroupId, int NewOwnerId)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Group TransferredGroup = dbContext.Groups.FirstOrDefault(g => g.GroupId == GroupId);
+            User NewOwner = dbContext.Users.FirstOrDefault(u => u.UserId == NewOwnerId);
+            Membership MembershipToCheck = dbContext.Memberships.FirstOrDefault(m => m.UserId == NewOwnerId && m.GroupId == GroupId);
+            if(TransferredGroup == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This group doesn't exist!");
+            }
+            else if(TransferredGroup.UserId != (int)LoggedInUserID)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This isn't your group to give away");
+            }
+            if(NewOwner == null)
+            {
+                ModelState.AddModelError("CurrentGroup.UserId","This user doesn't exist!");
+            }
+            else if(MembershipToCheck == null)
+            {
+                ModelState.AddModelError("CurrentGroup.UserId","This user isn't a part of that group!");
+            }
+            if(ModelState.IsValid)
+            {
+                TransferredGroup.UserId = NewOwner.UserId;
+                TransferredGroup.Owner = NewOwner;
+                dbContext.Update(TransferredGroup);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
         public IActionResult Login(LoginWrapper WrappedUser)
         {
             LoginUser user = WrappedUser.LoginUser;
@@ -192,8 +275,11 @@ namespace TurnipTracker.Controllers
                 dbContext.Add(user);
                 dbContext.SaveChanges();
                 Trend CurrentTrend = new Trend();
+                Trend LastWeekTrend = new Trend();
                 CurrentTrend.TrendOwner = user;
+                LastWeekTrend.TrendOwner = user;
                 dbContext.Add(CurrentTrend);
+                dbContext.Add(LastWeekTrend);
                 dbContext.SaveChanges();
                 HttpContext.Session.SetInt32("LoggedInUserID", user.UserId);
                 return RedirectToAction("Dashboard");

@@ -5,119 +5,269 @@
 
 <div class="text-center">
     <h1>Hello @Model.CurrentUser.FirstName @Model.CurrentUser.LastName</h1>
-    <div>
-        <a href="/JoinGroup"><button class="btn btn-primary">Join a group!</button></a>
-        <a href="/NewGroup"><button class="btn btn-primary">Start a new group!</button></a>
-    </div>
-    @if(@Model.AllGroups.Count == 0)
-    {
-        <p>You're not in any groups. Perhaps you would like to <a href="/JoinGroup">join one</a> or <a href="/NewGroup">start a new one?</a></p>
-    }
-    else
-    {
-        foreach(Group group in Model.AllGroups)
-        {
-            <p>You're a member of this group: @group.Name</p>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Buy Price</th>
-                        <th scope="col">Mon. AM</th>
-                        <th scope="col">Mon. PM</th>
-                        <th scope="col">Tues. AM</th>
-                        <th scope="col">Tues. PM</th>
-                        <th scope="col">Wed. AM</th>
-                        <th scope="col">Wed. PM</th>
-                        <th scope="col">Thurs. AM</th>
-                        <th scope="col">Thurs. PM</th>
-                        <th scope="col">Fri. AM</th>
-                        <th scope="col">Fri. PM</th>
-                        <th scope="col">Sat. AM</th>
-                        <th scope="col">Sat. PM</th>
-                        <th scope="col">Big Spike</th>
-                        <th scope="col">Small Spike</th>
-                        <th scope="col">Fluct.</th>
-                        <th scope="col">Decr.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(Membership Members in group.Members)
-                    {
-                        <tr>
-                            <td>@Members.User.FirstName @Members.User.LastName</td>
-                            <td>@Members.User.Trends[0].BuyPrice</td>
-                            <td>@Members.User.Trends[0].MonAM</td>
-                            <td>@Members.User.Trends[0].MonPM</td>
-                            <td>@Members.User.Trends[0].TueAM</td>
-                            <td>@Members.User.Trends[0].TuePM</td>
-                            <td>@Members.User.Trends[0].WedAM</td>
-                            <td>@Members.User.Trends[0].WedPM</td>
-                            <td>@Members.User.Trends[0].ThurAM</td>
-                            <td>@Members.User.Trends[0].ThurPM</td>
-                            <td>@Members.User.Trends[0].FriAM</td>
-                            <td>@Members.User.Trends[0].FriPM</td>
-                            <td>@Members.User.Trends[0].SatAM</td>
-                            <td>@Members.User.Trends[0].SatPM</td>
-                            <td>@Members.User.Trends[0].BigSpike</td>
-                            <td>@Members.User.Trends[0].SmallSpike</td>
-                            <td>@Members.User.Trends[0].Fluctuating</td>
-                            <td>@Members.User.Trends[0].Decreasing</td>
-                        </tr>
-                        <p>@Members.User.FirstName</p>
-                    }
-                </tbody>
-            </table>
-        }
-    }
-    <p>Here are your trends for the week!</p>
-    <form asp-action="UpdatePrices" asp-controller="Home" method="POST">
-        <div class="form-group">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Buy Price</th>
-                        <th scope="col">Mon. AM</th>
-                        <th scope="col">Mon. PM</th>
-                        <th scope="col">Tues. AM</th>
-                        <th scope="col">Tues. PM</th>
-                        <th scope="col">Wed. AM</th>
-                        <th scope="col">Wed. PM</th>
-                        <th scope="col">Thurs. AM</th>
-                        <th scope="col">Thurs. PM</th>
-                        <th scope="col">Fri. AM</th>
-                        <th scope="col">Fri. PM</th>
-                        <th scope="col">Sat. AM</th>
-                        <th scope="col">Sat. PM</th>
-                        <th scope="col">Big Spike</th>
-                        <th scope="col">Small Spike</th>
-                        <th scope="col">Fluct.</th>
-                        <th scope="col">Decr.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input asp-for="@Model.CurrentTrend.BuyPrice" value="@Model.CurrentUser.Trends[0].BuyPrice"></td>
-                        <td><input asp-for="@Model.CurrentTrend.MonAM" value="@Model.CurrentUser.Trends[0].MonAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.MonPM" value="@Model.CurrentUser.Trends[0].MonPM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.TueAM" value="@Model.CurrentUser.Trends[0].TueAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.TuePM" value="@Model.CurrentUser.Trends[0].TuePM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.WedAM" value="@Model.CurrentUser.Trends[0].WedAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.WedPM" value="@Model.CurrentUser.Trends[0].WedPM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.ThurAM" value="@Model.CurrentUser.Trends[0].ThurAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.ThurPM" value="@Model.CurrentUser.Trends[0].ThurPM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.FriAM" value="@Model.CurrentUser.Trends[0].FriAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.FriPM" value="@Model.CurrentUser.Trends[0].FriPM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.SatAM" value="@Model.CurrentUser.Trends[0].SatAM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.SatPM" value="@Model.CurrentUser.Trends[0].SatPM"></td>
-                        <td><input asp-for="@Model.CurrentTrend.BigSpike" value="@Model.CurrentUser.Trends[0].BigSpike"></td>
-                        <td><input asp-for="@Model.CurrentTrend.SmallSpike" value="@Model.CurrentUser.Trends[0].SmallSpike"></td>
-                        <td><input asp-for="@Model.CurrentTrend.Fluctuating" value="@Model.CurrentUser.Trends[0].Fluctuating"></td>
-                        <td><input asp-for="@Model.CurrentTrend.Decreasing" value="@Model.CurrentUser.Trends[0].Decreasing"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-primary">Update Prices</button>
+    <div class="d-flex flex-row justify-content-md-around">
+        <div class="d-flex flex-column">
+            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Join a group</button>
+            <span asp-validation-for="JoinGroup.Name" class="text-danger"></span>
+            <div class="dropdown-menu">
+                <form class="px-4 py-3" asp-action="JoinGroup" asp-controller="Home" method="POST">
+                    <div class="form-group">
+                        <label asp-for="JoinGroup.Name">Group Name:</label>
+                        <input asp-for="JoinGroup.Name">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Join Group</button>
+                </form>
+            </div>
         </div>
-    </form>
+        <div class="d-flex flex-column">
+            <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Make a new group</button>
+            <span asp-validation-for="MakeGroup.Name" class="text-danger"></span>
+            <div class="dropdown-menu">
+                <form class="px-4 py-3" asp-action="MakeGroup" asp-controller="Home" method="POST">
+                    <div class="form-dropdown">
+                        <label asp-for="MakeGroup.Name">Group Name:</label>
+                        <input asp-for="MakeGroup.Name">
+                    </div>
+                    <div class="form-check">
+                        <label asp-for="MakeGroup.NeedsMembershipApproval">Membership Needs Approval</label>
+                        <input asp-for="MakeGroup.NeedsMembershipApproval">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Make Group</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="accordion">
+        <h3>This Week's Trend</h3>
+        <div>
+            <form asp-action="UpdatePrices" asp-controller="Home" method="POST">
+                <div class="form-group">
+                <span asp-validation-for="CurrentTrend.BigSpike" class="text-danger"></span>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Buy Price</th>
+                                <th scope="col">Mon. AM</th>
+                                <th scope="col">Mon. PM</th>
+                                <th scope="col">Tues. AM</th>
+                                <th scope="col">Tues. PM</th>
+                                <th scope="col">Wed. AM</th>
+                                <th scope="col">Wed. PM</th>
+                                <th scope="col">Thurs. AM</th>
+                                <th scope="col">Thurs. PM</th>
+                                <th scope="col">Fri. AM</th>
+                                <th scope="col">Fri. PM</th>
+                                <th scope="col">Sat. AM</th>
+                                <th scope="col">Sat. PM</th>
+                                <th scope="col">Big Spike</th>
+                                <th scope="col">Small Spike</th>
+                                <th scope="col">Fluct.</th>
+                                <th scope="col">Decr.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input asp-for="@Model.CurrentTrend.BuyPrice" value="@Model.CurrentUser.Trends[0].BuyPrice"></td>
+                                <td><input asp-for="@Model.CurrentTrend.MonAM" value="@Model.CurrentUser.Trends[0].MonAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.MonPM" value="@Model.CurrentUser.Trends[0].MonPM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.TueAM" value="@Model.CurrentUser.Trends[0].TueAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.TuePM" value="@Model.CurrentUser.Trends[0].TuePM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.WedAM" value="@Model.CurrentUser.Trends[0].WedAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.WedPM" value="@Model.CurrentUser.Trends[0].WedPM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.ThurAM" value="@Model.CurrentUser.Trends[0].ThurAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.ThurPM" value="@Model.CurrentUser.Trends[0].ThurPM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.FriAM" value="@Model.CurrentUser.Trends[0].FriAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.FriPM" value="@Model.CurrentUser.Trends[0].FriPM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.SatAM" value="@Model.CurrentUser.Trends[0].SatAM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.SatPM" value="@Model.CurrentUser.Trends[0].SatPM"></td>
+                                <td><input asp-for="@Model.CurrentTrend.BigSpike" value="@Model.CurrentUser.Trends[0].BigSpike"></td>
+                                <td><input asp-for="@Model.CurrentTrend.SmallSpike" value="@Model.CurrentUser.Trends[0].SmallSpike"></td>
+                                <td><input asp-for="@Model.CurrentTrend.Fluctuating" value="@Model.CurrentUser.Trends[0].Fluctuating"></td>
+                                <td><input asp-for="@Model.CurrentTrend.Decreasing" value="@Model.CurrentUser.Trends[0].Decreasing"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Update Prices</button>
+                </div>
+            </form>
+        </div>
+        <h3>Last Week Trends</h3>
+        <div>
+            <form asp-action="UpdatePrices" asp-controller="Home" method="POST">
+                <span asp-validation-for="LastWeekTrend.BigSpike" class="text-danger"></span>
+                <div class="form-group">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Buy Price</th>
+                                <th scope="col">Mon. AM</th>
+                                <th scope="col">Mon. PM</th>
+                                <th scope="col">Tues. AM</th>
+                                <th scope="col">Tues. PM</th>
+                                <th scope="col">Wed. AM</th>
+                                <th scope="col">Wed. PM</th>
+                                <th scope="col">Thurs. AM</th>
+                                <th scope="col">Thurs. PM</th>
+                                <th scope="col">Fri. AM</th>
+                                <th scope="col">Fri. PM</th>
+                                <th scope="col">Sat. AM</th>
+                                <th scope="col">Sat. PM</th>
+                                <th scope="col">Big Spike</th>
+                                <th scope="col">Small Spike</th>
+                                <th scope="col">Fluct.</th>
+                                <th scope="col">Decr.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input asp-for="@Model.LastWeekTrend.BuyPrice" value="@Model.CurrentUser.Trends[1].BuyPrice"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.MonAM" value="@Model.CurrentUser.Trends[1].MonAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.MonPM" value="@Model.CurrentUser.Trends[1].MonPM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.TueAM" value="@Model.CurrentUser.Trends[1].TueAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.TuePM" value="@Model.CurrentUser.Trends[1].TuePM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.WedAM" value="@Model.CurrentUser.Trends[1].WedAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.WedPM" value="@Model.CurrentUser.Trends[1].WedPM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.ThurAM" value="@Model.CurrentUser.Trends[1].ThurAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.ThurPM" value="@Model.CurrentUser.Trends[1].ThurPM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.FriAM" value="@Model.CurrentUser.Trends[1].FriAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.FriPM" value="@Model.CurrentUser.Trends[1].FriPM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.SatAM" value="@Model.CurrentUser.Trends[1].SatAM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.SatPM" value="@Model.CurrentUser.Trends[1].SatPM"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.BigSpike" value="@Model.CurrentUser.Trends[1].BigSpike"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.SmallSpike" value="@Model.CurrentUser.Trends[1].SmallSpike"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.Fluctuating" value="@Model.CurrentUser.Trends[1].Fluctuating"></td>
+                                <td><input asp-for="@Model.LastWeekTrend.Decreasing" value="@Model.CurrentUser.Trends[1].Decreasing"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Update Prices</button>
+                </div>
+            </form>
+        </div>
+        <h3>Your Groups</h3>
+        <div>
+            @if(@Model.AllGroups.Count == 0)
+            {
+                <p>You're not currently in any groups!</p>
+            }
+            else
+            {
+                <span asp-validation-for="LeaveGroup.Name" class="text-danger"></span>
+                foreach(Group group in Model.AllGroups)
+                {
+                    <div class="border d-flex row justify-content-between text-center">
+                        <h2>@group.Name</h2>
+                        <form asp-action="LeaveGroup" asp-controller="Home" method="POST">
+                            <input type="Hidden" asp-for="LeaveGroup.GroupId" value="@group.GroupId">
+                            @if(@group.Owner == Model.CurrentUser)
+                            {
+                                <button type="submit" class="btn btn-danger">Delete Group</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-danger">Leave Group</button>
+                            }
+                        </form>
+                        @* @if(@group.Owner == Model.CurrentUser)
+                        {
+                            <span asp-validation-for="CurrentGroup.Name" class="text-danger"></span>
+                            <div class="dropdown-menu">
+                                <form class="px-4 py-3" asp-action="TransferOwnership" asp-controller="Home" method="POST">
+                                    <div class="form-group">
+                                        <label asp-for="CurrentGroup.Name">Group Name:</label>
+                                        <input asp-for="CurrentGroup.Name">
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">Transfer</button>
+                                </form>
+                            </div>
+                        } *@
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Island Link</th>
+                                    <th scope="col">Buy Price</th>
+                                    <th scope="col">Mon. AM</th>
+                                    <th scope="col">Mon. PM</th>
+                                    <th scope="col">Tues. AM</th>
+                                    <th scope="col">Tues. PM</th>
+                                    <th scope="col">Wed. AM</th>
+                                    <th scope="col">Wed. PM</th>
+                                    <th scope="col">Thurs. AM</th>
+                                    <th scope="col">Thurs. PM</th>
+                                    <th scope="col">Fri. AM</th>
+                                    <th scope="col">Fri. PM</th>
+                                    <th scope="col">Sat. AM</th>
+                                    <th scope="col">Sat. PM</th>
+                                    <th scope="col">Big Spike</th>
+                                    <th scope="col">Small Spike</th>
+                                    <th scope="col">Fluct.</th>
+                                    <th scope="col">Decr.</th>
+                                    @if(@group.Owner == @Model.CurrentUser)
+                                    {
+                                        <th scope="col">Actions</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(Membership Members in group.Members)
+                                {
+                                    @if(@Members.AcceptedToGroup == true || @group.Owner == @Model.CurrentUser)
+                                    {
+                                        <tr>
+                                            <td>@Members.User.FirstName @Members.User.LastName</td>
+                                            @if(@Members.User.IslandLink == null)
+                                            {
+                                                <td>No Island Link</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Members.User.IslandLink</td>
+                                            }
+                                            <td>@Members.User.Trends[0].BuyPrice</td>
+                                            <td>@Members.User.Trends[0].MonAM</td>
+                                            <td>@Members.User.Trends[0].MonPM</td>
+                                            <td>@Members.User.Trends[0].TueAM</td>
+                                            <td>@Members.User.Trends[0].TuePM</td>
+                                            <td>@Members.User.Trends[0].WedAM</td>
+                                            <td>@Members.User.Trends[0].WedPM</td>
+                                            <td>@Members.User.Trends[0].ThurAM</td>
+                                            <td>@Members.User.Trends[0].ThurPM</td>
+                                            <td>@Members.User.Trends[0].FriAM</td>
+                                            <td>@Members.User.Trends[0].FriPM</td>
+                                            <td>@Members.User.Trends[0].SatAM</td>
+                                            <td>@Members.User.Trends[0].SatPM</td>
+                                            <td>@Members.User.Trends[0].BigSpike</td>
+                                            <td>@Members.User.Trends[0].SmallSpike</td>
+                                            <td>@Members.User.Trends[0].Fluctuating</td>
+                                            <td>@Members.User.Trends[0].Decreasing</td>
+                                            @if(@group.Owner == @Model.CurrentUser)
+                                            {
+                                                <td>
+                                                     <div class="btn-group">
+                                                        <span asp-validation-for="CurrentGroup.Name" class="text-danger"></span>
+                                                        <span asp-validation-for="CurrentGroup.UserId" class="text-danger"></span>
+                                                         @if(@Members.AcceptedToGroup == true)
+                                                         {
+                                                            <a href="/TransferOwnership/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-primary">Transfer Ownership</button></a>
+                                                            <button type="button" class="btn btn-primary">Remove Member</button>
+                                                         }
+                                                         else
+                                                         {
+                                                            <button type="button" class="btn btn-primary">Accept Member</button>
+                                                            <button type="button" class="btn btn-danger">Reject Member</button>
+                                                         }
+                                                     </div>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+        </div>
+    </div>
 </div>
