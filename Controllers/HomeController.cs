@@ -234,6 +234,150 @@ namespace TurnipTracker.Controllers
             }
             return Dashboard();
         }
+		[HttpPost("EditGroup")]
+        public IActionResult EditGroup(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Group GroupToEdit = dbContext.Groups.FirstOrDefault(g => g.GroupId == wrapper.CurrentGroup.GroupId);
+            if(GroupToEdit == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This group doesn't exist!");
+            }
+            else if(GroupToEdit.UserId != (int)LoggedInUserID)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","You aren't the owner of this group.");
+            }
+            else if(dbContext.Groups.FirstOrDefault(g => g.Name == wrapper.CurrentGroup.Name && g.GroupId != wrapper.CurrentGroup.GroupId) != null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","A group with this name already exists. Try another one!");
+            }
+            if(ModelState.IsValid)
+            {
+                GroupToEdit.Name = wrapper.CurrentGroup.Name;
+                GroupToEdit.NeedsMembershipApproval = wrapper.CurrentGroup.NeedsMembershipApproval;
+                dbContext.Update(GroupToEdit);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
+		[HttpPost("IslandLink")]
+        public IActionResult IslandLink(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            User LoggedInUser = dbContext.Users.FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
+            LoggedInUser.IslandLink = wrapper.CurrentUser.IslandLink;
+            dbContext.Update(LoggedInUser);
+            dbContext.SaveChanges();
+            return RedirectToAction("Dashboard");
+        }
+		[HttpGet("AcceptOrReject/{MemberId}/{GroupId}/{Acceptance}")]
+        public IActionResult AcceptOrReject(int MemberId, int GroupId, bool Acceptance)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Group GroupToAccept = dbContext.Groups.FirstOrDefault(g => g.GroupId == GroupId);
+            Membership MembershipInQuestion = dbContext.Memberships.FirstOrDefault(m => m.UserId == MemberId && m.GroupId == GroupId && m.AcceptedToGroup == false);
+            if(GroupToAccept == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This group doesn't exist!");
+            }
+            else if(GroupToAccept.UserId != (int)LoggedInUserID)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","You're not the leader of this group!");
+            }
+            if(MembershipInQuestion == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This user is not awaiting membership to this group.");
+            }
+            if(ModelState.IsValid)
+            {
+                if(Acceptance == true)
+                {
+                    MembershipInQuestion.AcceptedToGroup = true;
+                    dbContext.Update(MembershipInQuestion);
+                }
+                else if(Acceptance == false)
+                {
+                    dbContext.Memberships.Remove(MembershipInQuestion);
+                }
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
+		[HttpGet("RemoveMember/{GroupId}/{UserId}")]
+        public IActionResult RemoveMember(int GroupId, int UserId)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            Membership MembershipToRemove = dbContext.Memberships.FirstOrDefault(m => m.UserId == UserId && m.GroupId == GroupId);
+            Group GroupToRemoveFrom = dbContext.Groups.FirstOrDefault(g => g.GroupId == GroupId);
+            if(GroupToRemoveFrom == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This group doesn't exist");
+            }
+            else if(MembershipToRemove == null)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","This member is not in this group");
+            }
+            else if(GroupToRemoveFrom.UserId != (int)LoggedInUserID)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","You are not the leader of this group. You can't remove members from it.");
+            }
+            else if(UserId == (int)LoggedInUserID)
+            {
+                ModelState.AddModelError("CurrentGroup.Name","The group must have a leader. Please either transfer ownership or delete the group before removing yourself");
+            }
+            if(ModelState.IsValid)
+            {
+                dbContext.Memberships.Remove(MembershipToRemove);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
+		[HttpPost("EditUser")]
+        public IActionResult EditUser(Wrapper wrapper)
+        {
+            int? LoggedInUserID = HttpContext.Session.GetInt32("LoggedInUserID");
+            if(LoggedInUserID==null)
+            {
+                return RedirectToAction("Index");
+            }
+            User UserToEdit = dbContext.Users.FirstOrDefault(u => u.UserId == (int)LoggedInUserID);
+            UserToEdit.FirstName = wrapper.CurrentUser.FirstName;
+            UserToEdit.LastName = wrapper.CurrentUser.LastName;
+            UserToEdit.Email = wrapper.CurrentUser.Email;
+            UserToEdit.Password = wrapper.CurrentUser.Password;
+            if(dbContext.Users.FirstOrDefault(u => u.Email == UserToEdit.Email && u.UserId != UserToEdit.UserId) != null)
+            {
+                ModelState.AddModelError("CurrentUser.Email","This email address is already being used");
+            }
+            if(ModelState.IsValid)
+            {
+                PasswordHasher<User> Hasher = new PasswordHasher<User>();
+                UserToEdit.Password = Hasher.HashPassword(UserToEdit, UserToEdit.Password);
+                dbContext.Update(UserToEdit);
+                dbContext.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            return Dashboard();
+        }
         public IActionResult Login(LoginWrapper WrappedUser)
         {
             LoginUser user = WrappedUser.LoginUser;
@@ -289,7 +433,6 @@ namespace TurnipTracker.Controllers
                 return View("Index");
             }
         }
-
         [HttpGet("/Logout")]
         public IActionResult Logout()
         {

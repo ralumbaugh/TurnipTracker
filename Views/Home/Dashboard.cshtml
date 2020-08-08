@@ -59,10 +59,10 @@
                                 <th scope="col">Fri. PM</th>
                                 <th scope="col">Sat. AM</th>
                                 <th scope="col">Sat. PM</th>
-                                <th scope="col">Big Spike</th>
-                                <th scope="col">Small Spike</th>
-                                <th scope="col">Fluct.</th>
-                                <th scope="col">Decr.</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Big Spike</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Small Spike</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Fluct.</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Decr.</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,6 +90,11 @@
                     <button type="submit" class="btn btn-primary">Update Prices</button>
                 </div>
             </form>
+            <form action="IslandLink" method="POST">
+                <label asp-for="CurrentUser.IslandLink">Change Your Island Link or Dodo code:</label>
+                <input asp-for="@Model.CurrentUser.IslandLink">
+                <button type="submit" class="btn btn-primary">Change Link</button>
+            </form>
         </div>
         <h3>Last Week Trends</h3>
         <div>
@@ -112,10 +117,10 @@
                                 <th scope="col">Fri. PM</th>
                                 <th scope="col">Sat. AM</th>
                                 <th scope="col">Sat. PM</th>
-                                <th scope="col">Big Spike</th>
-                                <th scope="col">Small Spike</th>
-                                <th scope="col">Fluct.</th>
-                                <th scope="col">Decr.</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Big Spike</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Small Spike</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Fluct.</th>
+                                <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Decr.</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,36 +157,43 @@
             }
             else
             {
+                <span asp-validation-for="CurrentGroup.Name" class="text-danger"></span>
+                <span asp-validation-for="CurrentGroup.UserId" class="text-danger"></span>
                 <span asp-validation-for="LeaveGroup.Name" class="text-danger"></span>
                 foreach(Group group in Model.AllGroups)
                 {
                     <div class="border d-flex row justify-content-between text-center">
                         <h2>@group.Name</h2>
-                        <form asp-action="LeaveGroup" asp-controller="Home" method="POST">
-                            <input type="Hidden" asp-for="LeaveGroup.GroupId" value="@group.GroupId">
                             @if(@group.Owner == Model.CurrentUser)
                             {
-                                <button type="submit" class="btn btn-danger">Delete Group</button>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edit Group</button>
+                                <div class="dropdown-menu">
+                                    <form class="px-4 py-3" asp-action="EditGroup" asp-controller="Home" method="POST">
+                                        <div class="form-dropdown">
+                                            <label asp-for="CurrentGroup.Name">Group Name:</label>
+                                            <input asp-for="CurrentGroup.Name" value="@group.Name">
+                                        </div>
+                                        <div class="form-check">
+                                            <label asp-for="CurrentGroup.NeedsMembershipApproval">Membership Needs Approval</label>
+                                            <input asp-for="CurrentGroup.NeedsMembershipApproval">
+                                        </div>
+                                        <input type="hidden" asp-for="CurrentGroup.GroupId" value="@group.GroupId">
+                                        <button type="submit" class="btn btn-primary">Edit Group</button>
+                                    </form>
+                                </div>
+                                <form asp-action="LeaveGroup" asp-controller="Home" method="POST">
+                                    <input type="Hidden" asp-for="LeaveGroup.GroupId" value="@group.GroupId">
+                                    <button type="submit" class="btn btn-danger">Delete Group</button>
+                                </form>
                             }
                             else
                             {
-                                <button type="submit" class="btn btn-danger">Leave Group</button>
-                            }
-                        </form>
-                        @* @if(@group.Owner == Model.CurrentUser)
-                        {
-                            <span asp-validation-for="CurrentGroup.Name" class="text-danger"></span>
-                            <div class="dropdown-menu">
-                                <form class="px-4 py-3" asp-action="TransferOwnership" asp-controller="Home" method="POST">
-                                    <div class="form-group">
-                                        <label asp-for="CurrentGroup.Name">Group Name:</label>
-                                        <input asp-for="CurrentGroup.Name">
-                                    </div>
-                                    <button type="submit" class="btn btn-warning">Transfer</button>
+                                <form asp-action="LeaveGroup" asp-controller="Home" method="POST">
+                                    <input type="Hidden" asp-for="LeaveGroup.GroupId" value="@group.GroupId">
+                                    <button type="submit" class="btn btn-danger">Leave Group</button>
                                 </form>
-                            </div>
-                        } *@
-                        <table class="table">
+                            }
+                        <table class="table tablesorter">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
@@ -199,10 +211,10 @@
                                     <th scope="col">Fri. PM</th>
                                     <th scope="col">Sat. AM</th>
                                     <th scope="col">Sat. PM</th>
-                                    <th scope="col">Big Spike</th>
-                                    <th scope="col">Small Spike</th>
-                                    <th scope="col">Fluct.</th>
-                                    <th scope="col">Decr.</th>
+                                    <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Big Spike</th>
+                                    <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Small Spike</th>
+                                    <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Fluct.</th>
+                                    <th scope="col" class=".show-option" title="Visit https://turnipprophet.io/ to find your percentages!">Decr.</th>
                                     @if(@group.Owner == @Model.CurrentUser)
                                     {
                                         <th scope="col">Actions</th>
@@ -218,7 +230,7 @@
                                             <td>@Members.User.FirstName @Members.User.LastName</td>
                                             @if(@Members.User.IslandLink == null)
                                             {
-                                                <td>No Island Link</td>
+                                                <td></td>
                                             }
                                             else
                                             {
@@ -245,17 +257,15 @@
                                             {
                                                 <td>
                                                      <div class="btn-group">
-                                                        <span asp-validation-for="CurrentGroup.Name" class="text-danger"></span>
-                                                        <span asp-validation-for="CurrentGroup.UserId" class="text-danger"></span>
-                                                         @if(@Members.AcceptedToGroup == true)
+                                                         @if(@Members.AcceptedToGroup == true && @Members.UserId != @Model.CurrentUser.UserId)
                                                          {
                                                             <a href="/TransferOwnership/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-primary">Transfer Ownership</button></a>
-                                                            <button type="button" class="btn btn-primary">Remove Member</button>
+                                                            <a href="/RemoveMember/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-danger">Remove Member</button></a>
                                                          }
-                                                         else
+                                                         else if(@Members.AcceptedToGroup == false)
                                                          {
-                                                            <button type="button" class="btn btn-primary">Accept Member</button>
-                                                            <button type="button" class="btn btn-danger">Reject Member</button>
+                                                            <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/true"><button type="button" class="btn btn-primary">Accept Member</button></a>
+                                                            <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/false"><button type="button" class="btn btn-danger">Reject Member</button></a>
                                                          }
                                                      </div>
                                                 </td>
@@ -269,5 +279,38 @@
                 }
             }
         </div>
+    <h3>Edit Your Profile</h3>
+    <div>
+    <div class="col-sm d-flex justify-content-center flex-column">
+        <form asp-action="EditUser" asp-controller="Home" method="POST">
+            <span asp-validation-for="CurrentUser.FirstName" class="text-danger"></span>
+            <div class="form-group d-flex justify-content-between">
+                <label asp-for="CurrentUser.FirstName">First Name: </label>
+                <input asp-for="CurrentUser.FirstName">
+            </div>
+            <span asp-validation-for="CurrentUser.LastName" class="text-danger"></span>
+            <div class="form-group d-flex justify-content-between">
+                <label asp-for="CurrentUser.LastName">Last Name: </label>
+                <input asp-for="CurrentUser.LastName">
+            </div>
+            <span asp-validation-for="CurrentUser.Email" class="text-danger"></span>
+            <div class="form-group d-flex justify-content-between">
+                <label asp-for="CurrentUser.Email">Email: </label>
+                <input asp-for="CurrentUser.Email">
+            </div>
+            <span asp-validation-for="CurrentUser.Password" class="text-danger"></span>
+            <div class="form-group d-flex justify-content-between">
+                <label asp-for="CurrentUser.Password">Password: </label>
+                <input asp-for="CurrentUser.Password">
+            </div>
+            <span asp-validation-for="CurrentUser.Confirm" class="text-danger"></span>
+            <div class="form-group d-flex justify-content-between">
+                <label asp-for="CurrentUser.Confirm">Confirm Password: </label>
+                <input asp-for="CurrentUser.Confirm">
+            </div>
+            <button class="btn btn-primary">Edit User</button>
+        </form>
+    </div>
+    </div>
     </div>
 </div>
