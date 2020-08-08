@@ -40,6 +40,29 @@
     <div id="accordion">
         <h3>This Week's Trend</h3>
         <div>
+            @if(Model.CurrentUser.Trends[1].KnownTrend == true)
+                {
+                    @if(Model.CurrentUser.Trends[1].Fluctuating==100)
+                    {
+                        <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM&pattern=0"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                    }
+                    else if(Model.CurrentUser.Trends[1].BigSpike==100)
+                    {
+                        <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM&pattern=1"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                    }
+                    else if(Model.CurrentUser.Trends[1].Decreasing==100)
+                    {
+                        <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM&pattern=2"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                    }
+                    else if(Model.CurrentUser.Trends[1].SmallSpike==100)
+                    {
+                        <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM&pattern=3"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                    }
+                }
+            else
+            {
+                <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+            }
             <form asp-action="UpdatePrices" asp-controller="Home" method="POST">
                 <div class="form-group">
                 <span asp-validation-for="CurrentTrend.BigSpike" class="text-danger"></span>
@@ -98,6 +121,7 @@
         </div>
         <h3>Last Week Trends</h3>
         <div>
+            <td><a href="https://turnipprophet.io?prices=@Model.CurrentUser.Trends[0].BuyPrice.@Model.CurrentUser.Trends[0].MonAM.@Model.CurrentUser.Trends[0].MonPM.@Model.CurrentUser.Trends[0].TueAM.@Model.CurrentUser.Trends[0].TuePM.@Model.CurrentUser.Trends[0].WedAM.@Model.CurrentUser.Trends[0].WedPM.@Model.CurrentUser.Trends[0].ThurAM.@Model.CurrentUser.Trends[0].ThurPM.@Model.CurrentUser.Trends[0].FriAM.@Model.CurrentUser.Trends[0].FriPM.@Model.CurrentUser.Trends[0].SatAM.@Model.CurrentUser.Trends[0].SatPM"><button class="btn btn-primary">Visit the Prophet</button></a></td>
             <form asp-action="UpdatePrices" asp-controller="Home" method="POST">
                 <span asp-validation-for="LastWeekTrend.BigSpike" class="text-danger"></span>
                 <div class="form-group">
@@ -162,7 +186,7 @@
                 <span asp-validation-for="LeaveGroup.Name" class="text-danger"></span>
                 foreach(Group group in Model.AllGroups)
                 {
-                    <div class="border d-flex row justify-content-between text-center">
+                    <div class="border d-flex row justify-content-between text-center overflow-auto">
                         <h2>@group.Name</h2>
                             @if(@group.Owner == Model.CurrentUser)
                             {
@@ -198,6 +222,7 @@
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Island Link</th>
+                                    <th scope="col">Turnip Prophet Link</th>
                                     <th scope="col">Buy Price</th>
                                     <th scope="col">Mon. AM</th>
                                     <th scope="col">Mon. PM</th>
@@ -236,6 +261,29 @@
                                             {
                                                 <td>@Members.User.IslandLink</td>
                                             }
+                                            @if(Members.User.Trends[1].KnownTrend == true)
+                                            {
+                                                @if(Members.User.Trends[1].Fluctuating==100)
+                                                {
+                                                    <td><a href="https://turnipprophet.io?prices=@Members.User.Trends[0].BuyPrice.@Members.User.Trends[0].MonAM.@Members.User.Trends[0].MonPM.@Members.User.Trends[0].TueAM.@Members.User.Trends[0].TuePM.@Members.User.Trends[0].WedAM.@Members.User.Trends[0].WedPM.@Members.User.Trends[0].ThurAM.@Members.User.Trends[0].ThurPM.@Members.User.Trends[0].FriAM.@Members.User.Trends[0].FriPM.@Members.User.Trends[0].SatAM.@Members.User.Trends[0].SatPM&pattern=0"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                                                }
+                                                else if(Members.User.Trends[1].BigSpike==100)
+                                                {
+                                                    <td><a href="https://turnipprophet.io?prices=@Members.User.Trends[0].BuyPrice.@Members.User.Trends[0].MonAM.@Members.User.Trends[0].MonPM.@Members.User.Trends[0].TueAM.@Members.User.Trends[0].TuePM.@Members.User.Trends[0].WedAM.@Members.User.Trends[0].WedPM.@Members.User.Trends[0].ThurAM.@Members.User.Trends[0].ThurPM.@Members.User.Trends[0].FriAM.@Members.User.Trends[0].FriPM.@Members.User.Trends[0].SatAM.@Members.User.Trends[0].SatPM&pattern=1"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                                                }
+                                                else if(Members.User.Trends[1].Decreasing==100)
+                                                {
+                                                    <td><a href="https://turnipprophet.io?prices=@Members.User.Trends[0].BuyPrice.@Members.User.Trends[0].MonAM.@Members.User.Trends[0].MonPM.@Members.User.Trends[0].TueAM.@Members.User.Trends[0].TuePM.@Members.User.Trends[0].WedAM.@Members.User.Trends[0].WedPM.@Members.User.Trends[0].ThurAM.@Members.User.Trends[0].ThurPM.@Members.User.Trends[0].FriAM.@Members.User.Trends[0].FriPM.@Members.User.Trends[0].SatAM.@Members.User.Trends[0].SatPM&pattern=2"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                                                }
+                                                else if(Members.User.Trends[1].SmallSpike==100)
+                                                {
+                                                    <td><a href="https://turnipprophet.io?prices=@Members.User.Trends[0].BuyPrice.@Members.User.Trends[0].MonAM.@Members.User.Trends[0].MonPM.@Members.User.Trends[0].TueAM.@Members.User.Trends[0].TuePM.@Members.User.Trends[0].WedAM.@Members.User.Trends[0].WedPM.@Members.User.Trends[0].ThurAM.@Members.User.Trends[0].ThurPM.@Members.User.Trends[0].FriAM.@Members.User.Trends[0].FriPM.@Members.User.Trends[0].SatAM.@Members.User.Trends[0].SatPM&pattern=3"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td><a href="https://turnipprophet.io?prices=@Members.User.Trends[0].BuyPrice.@Members.User.Trends[0].MonAM.@Members.User.Trends[0].MonPM.@Members.User.Trends[0].TueAM.@Members.User.Trends[0].TuePM.@Members.User.Trends[0].WedAM.@Members.User.Trends[0].WedPM.@Members.User.Trends[0].ThurAM.@Members.User.Trends[0].ThurPM.@Members.User.Trends[0].FriAM.@Members.User.Trends[0].FriPM.@Members.User.Trends[0].SatAM.@Members.User.Trends[0].SatPM"><button class="btn btn-primary">Visit the Prophet</button></a></td>
+                                            }
                                             <td>@Members.User.Trends[0].BuyPrice</td>
                                             <td>@Members.User.Trends[0].MonAM</td>
                                             <td>@Members.User.Trends[0].MonPM</td>
@@ -256,18 +304,20 @@
                                             @if(@group.Owner == @Model.CurrentUser)
                                             {
                                                 <td>
-                                                     <div class="btn-group">
-                                                         @if(@Members.AcceptedToGroup == true && @Members.UserId != @Model.CurrentUser.UserId)
-                                                         {
-                                                            <a href="/TransferOwnership/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-primary">Transfer Ownership</button></a>
-                                                            <a href="/RemoveMember/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-danger">Remove Member</button></a>
-                                                         }
-                                                         else if(@Members.AcceptedToGroup == false)
-                                                         {
-                                                            <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/true"><button type="button" class="btn btn-primary">Accept Member</button></a>
-                                                            <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/false"><button type="button" class="btn btn-danger">Reject Member</button></a>
-                                                         }
-                                                     </div>
+                                                        @if(@Members.AcceptedToGroup == true && @Members.UserId != @Model.CurrentUser.UserId)
+                                                        {
+                                                            <div class="btn-group">
+                                                                <a href="/TransferOwnership/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-primary">Transfer Ownership</button></a>
+                                                                <a href="/RemoveMember/@Members.GroupId/@Members.UserId"><button type="button" class="btn btn-danger">Remove Member</button></a>
+                                                            </div>
+                                                        }
+                                                        else if(@Members.AcceptedToGroup == false)
+                                                        {
+                                                            <div class="btn-group">
+                                                                <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/true"><button type="button" class="btn btn-primary">Accept Member</button></a>
+                                                                <a href="/AcceptOrReject/@Members.UserId/@Members.GroupId/false"><button type="button" class="btn btn-danger">Reject Member</button></a>
+                                                            </div>
+                                                        }
                                                 </td>
                                             }
                                         </tr>

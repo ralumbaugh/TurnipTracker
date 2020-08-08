@@ -59,7 +59,7 @@ namespace TurnipTracker.Controllers
                 TrendNumber = 1;
                 wrapper.CurrentTrend = wrapper.LastWeekTrend;
             }
-            if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing != 1){
+            if(wrapper.CurrentTrend.BigSpike + wrapper.CurrentTrend.SmallSpike + wrapper.CurrentTrend.Fluctuating + wrapper.CurrentTrend.Decreasing != 100){
                 if(TrendNumber == 1)
                 {
                     ModelState.AddModelError("LastWeekTrend.BigSpike","Trends should add up to 100%");
@@ -90,7 +90,14 @@ namespace TurnipTracker.Controllers
                 TrendToChange.SmallSpike = wrapper.CurrentTrend.SmallSpike;
                 TrendToChange.Fluctuating = wrapper.CurrentTrend.Fluctuating;
                 TrendToChange.Decreasing = wrapper.CurrentTrend.Decreasing;
-                TrendToChange.KnownTrend = wrapper.CurrentTrend.KnownTrend;
+                if(TrendToChange.BigSpike == 100 || TrendToChange.SmallSpike == 100 || TrendToChange.Fluctuating == 100 || TrendToChange.Decreasing == 100)
+                {
+                    TrendToChange.KnownTrend = true;
+                }
+                else
+                {
+                    TrendToChange.KnownTrend = false;
+                }
                 dbContext.Update(TrendToChange);
                 dbContext.SaveChanges();
                 return RedirectToAction("Dashboard");
